@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Weather display · DigiSign</title>
+    <link rel="stylesheet" href="static/weather.css" />
+    <script type="module" src="static/weather-app.mjs"></script>
+  </head>
+  <body class="display-page" data-view="display">
+    <nav class="display-nav">
+      <a class="brand" href="index.html"
+        ><span class="brand-mark" aria-hidden="true">d.</span>DigiSign</a
+      ><a id="back-to-editor" href="index.html">← Change widget</a>
+    </nav>
+    <main class="display-stage">
+      <div id="widget-preview" class="widget-host"></div>
+    </main>
+    <footer class="display-footer">
+      <div class="data-status">
+        <p id="weather-status" role="status">Loading weather…</p>
+        <button id="retry" class="text-button" type="button" hidden>
+          Try again
+        </button>
+      </div>
+      <span
+        >Weather by
+        <a href="https://open-meteo.com/" target="_blank" rel="noreferrer"
+          >Open-Meteo</a
+        ></span
+      >
+    </footer>
+    <noscript>Please enable JavaScript to display live weather.</noscript>
+  </body>
+</html>
