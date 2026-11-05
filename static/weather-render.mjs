@@ -1,4 +1,10 @@
-import { condition, dayLabel, rounded } from "./weather-core.mjs";
+import {
+  condition,
+  dayLabel,
+  rounded,
+  normalizeCustom,
+  customPalette,
+} from "./weather-core.mjs";
 export function escapeHtml(value) {
   return String(value ?? "").replace(
     /[&<>"']/g,
@@ -41,6 +47,7 @@ export function icon(kind) {
   return `<svg class="weather-icon" viewBox="0 0 72 72" aria-hidden="true">${art}</svg>`;
 }
 export function widgetMarkup(preset, settings, state = {}) {
+  if (preset === "custom") return customWidgetMarkup(settings, state);
   const { data, status } = state,
     cur = data?.current,
     daily = data?.daily;
@@ -65,4 +72,49 @@ export function widgetMarkup(preset, settings, state = {}) {
     bottom = `<div class="widget-bottom"><span>H <strong>${rounded(daily.temperature_2m_max[0])}°</strong></span><span>L <strong>${rounded(daily.temperature_2m_min[0])}°</strong></span><span class="feels">Feels like <strong>${rounded(cur.apparent_temperature)}°</strong></span></div>`;
   }
   return `<article class="weather-widget widget-${preset}${cur?.is_day === 0 ? " is-night" : ""}" aria-label="${escapeHtml(preset)} weather for ${escapeHtml(settings.location.name)}">${top}${now}${bottom}</article>`;
+}
+
+function customWidgetMarkup(settings, { data, status } = {}) {
+  const custom = normalizeCustom(settings.custom);
+  const palette = customPalette(custom.background);
+  const cur = data?.current,
+    daily = data?.daily;
+  const days =
+    custom.layout === "three-day" ? 3 : custom.layout === "five-day" ? 5 : 0;
+  const weather = condition(cur?.weather_code, cur?.is_day !== 0);
+  const title = custom.title
+    ? `<p class="widget-title">${escapeHtml(custom.title)}</p>`
+    : "";
+  const place = `<div>${title}<p class="widget-city">${escapeHtml(settings.location.name)}</p><p class="widget-region">${escapeHtml(settings.location.region)}</p></div>`;
+  const top = `<div class="widget-top">${place}<span class="widget-kicker">${days ? `${days}-day outlook` : "Current weather"}</span></div>`;
+  const now = cur
+    ? `<div class="widget-now"><div><div class="widget-temp">${rounded(cur.temperature_2m)}°<span class="widget-unit">${settings.units === "celsius" ? "C" : "F"}</span></div><p class="widget-condition">${weather.label}</p></div>${custom.showIcon ? icon(weather.icon) : ""}</div>`
+    : `<div class="widget-empty">${custom.showIcon ? icon("unknown") : ""}${status === "error" ? "Weather is temporarily unavailable.<br>Please try again." : "Loading your forecast…"}</div>`;
+  const details = [];
+  if (cur && custom.showHighLow)
+    details.push(
+      `<span>High <strong>${rounded(daily.temperature_2m_max[0])}°</strong></span><span>Low <strong>${rounded(daily.temperature_2m_min[0])}°</strong></span>`,
+    );
+  if (cur && custom.showFeelsLike)
+    details.push(
+      `<span class="feels">Feels like <strong>${rounded(cur.apparent_temperature)}°</strong></span>`,
+    );
+  const bottom = details.length
+    ? `<div class="widget-bottom">${details.join("")}</div>`
+    : "";
+  const forecast =
+    cur && days
+      ? `<div class="forecast-days">${daily.time
+          .slice(0, days)
+          .map((date, i) => {
+            const description = condition(daily.weather_code[i]);
+            const rain = daily.precipitation_probability_max?.[i];
+            const picture = custom.showIcon
+              ? `<span role="img" aria-label="${description.label}">${icon(description.icon)}</span>`
+              : `<span class="forecast-condition">${description.label}</span>`;
+            return `<div class="forecast-day"><span>${dayLabel(date, i)}</span>${picture}<div><strong>${rounded(daily.temperature_2m_max[i])}°</strong><span class="forecast-low">${rounded(daily.temperature_2m_min[i])}°</span></div><div class="rain-chance" aria-label="Precipitation probability ${rounded(rain)} percent">${Number.isFinite(rain) ? rounded(rain) + "% precip." : "—"}</div></div>`;
+          })
+          .join("")}</div>`
+      : "";
+  return `<article class="weather-widget widget-custom custom-layout-${custom.layout} custom-text-${custom.textSize}${custom.showIcon ? "" : " custom-no-icon"}" style="--custom-background:${palette.background};--ink:${palette.ink};--soft:${palette.soft};--rule:${palette.rule}" aria-label="Custom weather for ${escapeHtml(settings.location.name)}">${top}${now}${bottom}${forecast}</article>`;
 }

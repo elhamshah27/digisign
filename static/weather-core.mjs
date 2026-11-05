@@ -16,6 +16,61 @@ export const PRESETS = [
     description: "The next five days at a glance.",
   },
 ];
+export const CUSTOM_DEFAULT = Object.freeze({
+  background: "#ffffff",
+  layout: "today",
+  textSize: "standard",
+  title: "",
+  showIcon: true,
+  showFeelsLike: true,
+  showHighLow: true,
+});
+export function normalizeCustom(value) {
+  const boolean = (key) =>
+    typeof value?.[key] === "boolean" ? value[key] : CUSTOM_DEFAULT[key];
+  return {
+    background:
+      typeof value?.background === "string" &&
+      /^#[0-9a-f]{6}$/i.test(value.background)
+        ? value.background.toLowerCase()
+        : CUSTOM_DEFAULT.background,
+    layout: ["today", "three-day", "five-day"].includes(value?.layout)
+      ? value.layout
+      : CUSTOM_DEFAULT.layout,
+    textSize: value?.textSize === "large" ? "large" : "standard",
+    title:
+      typeof value?.title === "string"
+        ? Array.from(value.title.trim()).slice(0, 40).join("")
+        : "",
+    showIcon: boolean("showIcon"),
+    showFeelsLike: boolean("showFeelsLike"),
+    showHighLow: boolean("showHighLow"),
+  };
+}
+function luminance(hex) {
+  const components = [1, 3, 5].map((index) => {
+    const value = parseInt(hex.slice(index, index + 2), 16) / 255;
+    return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+  });
+  return (
+    components[0] * 0.2126 + components[1] * 0.7152 + components[2] * 0.0722
+  );
+}
+// Choose the more readable black/white text automatically; both text levels
+// keep the same contrast so labels stay readable on any chosen background.
+export function customPalette(background) {
+  const safeBackground = normalizeCustom({ background }).background;
+  const light = luminance(safeBackground);
+  const darkContrast = (light + 0.05) / 0.05;
+  const lightContrast = 1.05 / (light + 0.05);
+  const ink = darkContrast >= lightContrast ? "#000000" : "#ffffff";
+  return {
+    background: safeBackground,
+    ink,
+    soft: ink,
+    rule: ink === "#000000" ? "#00000033" : "#ffffff55",
+  };
+}
 export const DEFAULT = {
   preset: "minimal",
   units: "fahrenheit",
@@ -25,6 +80,7 @@ export const DEFAULT = {
     lat: 42.3601,
     lon: -71.0589,
   },
+  custom: { ...CUSTOM_DEFAULT },
 };
 export const REFRESH_MS = 10 * 60 * 1000;
 export const MAX_CACHE_AGE = 24 * 60 * 60 * 1000;
@@ -42,9 +98,10 @@ export function validLocation(value) {
 }
 export function normalizeSettings(value) {
   return {
-    preset: PRESETS.some((p) => p.id === value?.preset)
-      ? value.preset
-      : DEFAULT.preset,
+    preset:
+      value?.preset === "custom" || PRESETS.some((p) => p.id === value?.preset)
+        ? value.preset
+        : DEFAULT.preset,
     units: value?.units === "celsius" ? "celsius" : "fahrenheit",
     location: validLocation(value?.location)
       ? {
@@ -52,14 +109,40 @@ export function normalizeSettings(value) {
           region: String(value.location.region ?? "").slice(0, 160),
         }
       : { ...DEFAULT.location },
+    custom: normalizeCustom(value?.custom),
   };
 }
 export function settingsFromQuery(search, fallback) {
   const p = new URLSearchParams(search);
   if (!p.has("preset")) return normalizeSettings(fallback);
+  const customKeys = [
+    "background",
+    "layout",
+    "textSize",
+    "title",
+    "showIcon",
+    "showFeelsLike",
+    "showHighLow",
+  ];
+  const hasCustom = customKeys.some((key) => p.has(key));
+  const custom = hasCustom
+    ? {
+        background: p.get("background"),
+        layout: p.get("layout"),
+        textSize: p.get("textSize"),
+        title: p.get("title"),
+        ...Object.fromEntries(
+          ["showIcon", "showFeelsLike", "showHighLow"].map((key) => [
+            key,
+            p.get(key) === "1" ? true : p.get(key) === "0" ? false : undefined,
+          ]),
+        ),
+      }
+    : fallback?.custom;
   return normalizeSettings({
     preset: p.get("preset"),
     units: p.get("units"),
+    custom,
     location: {
       name: p.get("city"),
       region: p.get("region"),
@@ -69,15 +152,21 @@ export function settingsFromQuery(search, fallback) {
   });
 }
 export function displayQuery(settings) {
-  const { preset, units, location: l } = normalizeSettings(settings);
-  return new URLSearchParams({
+  const { preset, units, location: l, custom } = normalizeSettings(settings);
+  const query = new URLSearchParams({
     preset,
     units,
     city: l.name,
     region: l.region,
     lat: l.lat,
     lon: l.lon,
-  }).toString();
+  });
+  if (preset === "custom") {
+    for (const [key, value] of Object.entries(custom)) {
+      query.set(key, typeof value === "boolean" ? (value ? "1" : "0") : value);
+    }
+  }
+  return query.toString();
 }
 export function condition(code, isDay = true) {
   if (code === 0)

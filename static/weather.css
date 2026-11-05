@@ -846,3 +846,524 @@ h1 {
     transition: none !important;
   }
 }
+
+/* The editor uses labeled choices, large targets, and a separate unsaved preview. */
+.city-form label,
+.field-label,
+.unit-field legend {
+  font-size: 14px;
+}
+.search-row input,
+.search-row button {
+  font-size: 16px;
+  min-height: 46px;
+}
+.city-results button {
+  font-size: 16px;
+  min-height: 52px;
+}
+.city-results small {
+  font-size: 13px;
+}
+.unit-toggle span {
+  font-size: 17px;
+  min-width: 48px;
+  min-height: 44px;
+  text-align: center;
+}
+.custom-card {
+  flex-wrap: wrap;
+  border-style: solid;
+  background: #eef5f8;
+}
+.custom-card h3 {
+  font-size: 20px;
+}
+.custom-card p {
+  font-size: 15px;
+  max-width: 36ch;
+}
+.custom-card .custom-symbol {
+  font-size: 32px;
+}
+.custom-card-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.custom-card .custom-card-actions button {
+  margin: 0;
+  min-height: 48px;
+  padding: 12px 16px;
+  font-size: 16px;
+  border-radius: 8px;
+  background: var(--blue);
+  color: white;
+  white-space: normal;
+}
+.custom-card #use-custom {
+  color: var(--blue);
+  background: white;
+  border: 1px solid #a5c3d3;
+}
+.custom-card.is-selected {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 1px var(--blue);
+}
+.custom-editor {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 26px;
+  background: white;
+  min-width: 0;
+}
+.editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.editor-header h2 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 550;
+  letter-spacing: -0.7px;
+}
+.editor-header .eyebrow {
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+.editor-intro {
+  font-size: 16px;
+  color: #4b6270;
+  line-height: 1.6;
+  margin: 20px 0;
+}
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 10px 16px;
+  background: white;
+  border: 1px solid #aebfc9;
+  border-radius: 8px;
+  color: #254556;
+  font-size: 16px;
+}
+.secondary-button:hover {
+  background: #edf5f8;
+}
+.step-status {
+  font-size: 15px;
+  font-weight: 550;
+  color: var(--blue);
+  margin: 0 0 12px;
+}
+.step-track {
+  display: flex;
+  gap: 7px;
+  margin-bottom: 24px;
+}
+.step-track span {
+  height: 5px;
+  flex: 1;
+  background: #e5edf1;
+  border-radius: 3px;
+}
+.step-track .complete {
+  background: var(--blue);
+}
+.editor-step h3 {
+  font-weight: 550;
+  font-size: 23px;
+  letter-spacing: -0.3px;
+  margin: 0 0 22px;
+}
+.editor-step h3:focus {
+  outline: none;
+}
+.editor-field {
+  padding: 0;
+  margin: 0 0 24px;
+  border: 0;
+  min-width: 0;
+}
+.editor-field legend,
+.editor-field > label {
+  font-size: 17px;
+  font-weight: 550;
+  margin-bottom: 12px;
+  display: block;
+}
+.editor-field .optional {
+  font-weight: 400;
+  color: var(--muted);
+}
+.editor-field input[type="text"] {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px;
+  border: 1px solid #aebfc9;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #172e3b;
+}
+.field-help {
+  margin: 10px 0;
+  color: #526875;
+  line-height: 1.5;
+  font-size: 14px;
+}
+.color-choices {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 7px;
+}
+.color-choice {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+  gap: 8px;
+  padding: 12px 3px;
+  border: 2px solid transparent;
+  border-radius: 9px;
+  background: #f6f8f9;
+  cursor: pointer;
+  font-size: 13px;
+  text-align: center;
+}
+.color-choice input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+.color-dot {
+  display: block;
+  border-radius: 50%;
+  border: 1px solid #9bb0bb;
+  width: 31px;
+  height: 31px;
+  background: var(--swatch);
+}
+.color-choice:has(input:checked) {
+  border-color: var(--blue);
+  background: #e8f2f8;
+  font-weight: 600;
+}
+.color-choice:has(input:focus-visible) {
+  outline: 3px solid #299cce;
+  outline-offset: 3px;
+}
+.editor-field .other-color {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  margin: 14px 0 6px;
+  cursor: pointer;
+}
+.other-color input {
+  width: 48px;
+  height: 44px;
+  padding: 3px;
+  border: 1px solid #aebfc9;
+  border-radius: 6px;
+  cursor: pointer;
+  background: white;
+}
+.choice-tile {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  border: 2px solid #dce5ea;
+  border-radius: 10px;
+  padding: 14px;
+  cursor: pointer;
+}
+.choice-tile:has(input:checked) {
+  border-color: var(--blue);
+  background: #eef6fa;
+}
+.choice-tile input,
+.check-row input {
+  accent-color: var(--blue);
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  margin: 0;
+}
+.choice-tile strong {
+  display: block;
+  font-size: 17px;
+  font-weight: 550;
+}
+.choice-tile small,
+.check-row small {
+  display: block;
+  font-size: 14px;
+  color: #526875;
+  line-height: 1.5;
+  margin-top: 4px;
+}
+.layout-choices {
+  display: grid;
+  gap: 10px;
+}
+.size-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.size-choices .choice-tile {
+  align-items: flex-start;
+}
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  cursor: pointer;
+  font-size: 16px;
+  border-bottom: 1px solid #e4eaee;
+}
+.editor-tools {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+.editor-tools .text-button {
+  min-height: 44px;
+  font-size: 14px;
+  padding: 8px 2px;
+}
+.editor-tools .text-button:disabled {
+  color: #647681;
+  text-decoration: none;
+}
+.editor-feedback {
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 22px;
+  color: #38664f;
+  margin: 8px 0 18px;
+}
+.editor-navigation {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+.editor-navigation .primary-button {
+  justify-content: center;
+  font-size: 16px;
+  min-height: 50px;
+  margin-left: auto;
+  white-space: normal;
+}
+.ready-note {
+  padding: 20px;
+  background: #eef6f1;
+  border-radius: 10px;
+  font-size: 17px;
+  line-height: 1.6;
+}
+.ready-note p {
+  font-size: 16px;
+  margin: 8px 0 0;
+  color: #3c5c4d;
+}
+.is-editing .preview-panel {
+  position: sticky;
+  top: 22px;
+  align-self: start;
+  min-width: 0;
+}
+.is-editing .preview-footer {
+  display: none;
+}
+.is-editing .preview-stage {
+  min-height: 280px;
+}
+.widget-custom {
+  background: var(--custom-background);
+}
+.widget-custom .widget-top {
+  flex-wrap: wrap;
+}
+.widget-custom .widget-top > div {
+  flex: 1;
+  min-width: 0;
+}
+.widget-custom .widget-title {
+  font-size: 5.5cqw;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0 0 2cqw;
+  overflow-wrap: anywhere;
+}
+.widget-custom .widget-title + .widget-city {
+  font-size: 3.7cqw;
+}
+.widget-custom .widget-bottom {
+  flex-wrap: wrap;
+  row-gap: 2cqw;
+}
+.widget-custom .forecast-days {
+  margin-top: 4cqw;
+}
+.custom-layout-three-day .forecast-days {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.custom-layout-three-day .forecast-day {
+  font-size: 3.6cqw;
+}
+.custom-layout-three-day .rain-chance {
+  font-size: 2.8cqw;
+}
+.custom-layout-three-day .forecast-day .weather-icon {
+  width: 11cqw;
+  height: 11cqw;
+}
+.custom-layout-three-day .widget-temp,
+.custom-layout-five-day .widget-temp {
+  font-size: 17cqw;
+}
+.widget-custom.custom-no-icon .forecast-day > div {
+  margin-top: 2cqw;
+}
+.widget-custom .forecast-condition {
+  display: block;
+  margin: 2cqw 0;
+  overflow-wrap: anywhere;
+  line-height: 1.3;
+}
+.widget-custom.custom-text-large .widget-title {
+  font-size: 6.5cqw;
+}
+.widget-custom.custom-text-large .widget-city {
+  font-size: 6cqw;
+}
+.widget-custom.custom-text-large .widget-title + .widget-city {
+  font-size: 4.6cqw;
+}
+.widget-custom.custom-text-large .widget-region {
+  font-size: 3.5cqw;
+}
+.widget-custom.custom-text-large .widget-kicker {
+  font-size: 3cqw;
+  letter-spacing: 0.15cqw;
+}
+.widget-custom.custom-text-large .widget-condition {
+  font-size: 5cqw;
+}
+.widget-custom.custom-text-large .widget-temp {
+  font-size: 23cqw;
+}
+.widget-custom.custom-text-large .widget-unit {
+  font-size: 6cqw;
+}
+.widget-custom.custom-text-large .widget-bottom {
+  font-size: 3.8cqw;
+}
+.widget-custom.custom-text-large .forecast-day {
+  font-size: 3.5cqw;
+}
+.widget-custom.custom-text-large .rain-chance {
+  font-size: 2.7cqw;
+}
+.widget-custom.custom-text-large.custom-layout-three-day .forecast-day {
+  font-size: 4.5cqw;
+}
+.widget-custom.custom-text-large.custom-layout-three-day .rain-chance {
+  font-size: 3.5cqw;
+}
+/* Long headings and extra details need room on a TV without growing past its edges. */
+.display-page:has(.widget-custom) .widget-host {
+  max-width: 900px;
+}
+@media (max-width: 1050px) and (min-width: 781px) {
+  .is-editing .workbench {
+    grid-template-columns: 1fr 1.2fr;
+    gap: 18px;
+  }
+  .custom-editor {
+    padding: 20px;
+  }
+  .size-choices {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 780px) {
+  .custom-editor {
+    padding: 20px;
+  }
+  .is-editing .preview-panel {
+    position: static;
+    background: #f6f7f8;
+    padding-top: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .is-editing .preview-panel .section-heading {
+    margin-bottom: 8px;
+  }
+  .is-editing .preview-stage {
+    min-height: 0;
+    padding: 8px;
+  }
+  .is-editing .preview-stage .widget-host {
+    max-width: 240px;
+  }
+  .is-editing .data-status {
+    font-size: 10px;
+    min-height: 22px;
+  }
+  .is-editing .data-status p {
+    margin: 5px 0;
+  }
+  .is-editing .workbench {
+    gap: 18px;
+  }
+  .editor-navigation {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    padding: 12px 0 4px;
+  }
+  .custom-card-actions {
+    flex-direction: column;
+  }
+  .size-choices {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-height: 700px) and (max-width: 780px) {
+  .is-editing .preview-panel {
+    position: static;
+  }
+}
+@media (max-width: 400px) {
+  .custom-editor {
+    padding: 16px;
+  }
+  .editor-header {
+    align-items: flex-start;
+  }
+  .editor-header h2 {
+    font-size: 26px;
+  }
+  .color-choices {
+    gap: 4px;
+  }
+  .color-choice {
+    font-size: 12px;
+  }
+}

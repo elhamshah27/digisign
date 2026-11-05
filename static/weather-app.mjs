@@ -10,8 +10,10 @@ import {
   validLocation,
 } from "./weather-core.mjs";
 import { widgetMarkup, escapeHtml } from "./weather-render.mjs";
+import { createCustomEditor } from "./custom-editor.mjs";
 const $ = (id) => document.getElementById(id);
 const KEY = "digisign:weather-settings:v1";
+const CUSTOM_SAVED_KEY = "digisign:custom-saved:v1";
 let storage;
 try {
   storage = window.localStorage;
@@ -19,15 +21,23 @@ try {
   /* Private browsing can deny storage. */
 }
 let settings = settingsFromQuery(location.search, readStored(storage, KEY));
+let hasCustom =
+  settings.preset === "custom" ||
+  readStored(storage, CUSTOM_SAVED_KEY) === true;
+let draft = null;
+let editor;
 let state = { status: "loading", data: null };
 const isDisplay = document.body.dataset.view === "display";
 const source = new WeatherSource({ storage });
 let timer;
 
 function render() {
+  const previewSettings = draft
+    ? { ...settings, preset: "custom", custom: draft }
+    : settings;
   $("widget-preview").innerHTML = widgetMarkup(
-    settings.preset,
-    settings,
+    previewSettings.preset,
+    previewSettings,
     state,
   );
   const fetched = state.savedAt
@@ -50,6 +60,7 @@ function render() {
         : `Updated ${fetched} · Refreshes every 10 minutes`;
   $("retry").hidden = state.status !== "error";
   if (isDisplay) {
+    fitDisplayWidget();
     $("back-to-editor").href = "index.html?" + displayQuery(settings);
     document.title = `${settings.location.name} weather · DigiSign`;
     return;
@@ -64,9 +75,26 @@ function render() {
           : "CONNECTING";
   $("location-label").textContent = settings.location.name;
   $("region-label").textContent = settings.location.region;
-  $("selected-name").textContent = PRESETS.find(
-    (p) => p.id === settings.preset,
-  ).name;
+  $("selected-name").textContent =
+    settings.preset === "custom"
+      ? "Your own widget"
+      : PRESETS.find((p) => p.id === settings.preset).name;
+  $("customize").textContent = hasCustom
+    ? "Edit my widget →"
+    : "Make my widget →";
+  $("use-custom").hidden = !hasCustom;
+  $("use-custom").setAttribute(
+    "aria-pressed",
+    String(settings.preset === "custom"),
+  );
+  $("use-custom").textContent =
+    settings.preset === "custom"
+      ? "✓ Using your widget"
+      : "Use my saved widget";
+  $("custom-card").classList.toggle(
+    "is-selected",
+    settings.preset === "custom",
+  );
   $("open-display").href = "display.html?" + displayQuery(settings);
   document.querySelectorAll('input[name="units"]').forEach((el) => {
     el.checked = el.value === settings.units;
@@ -84,8 +112,37 @@ function render() {
     );
   }
 }
+// Custom designs vary in height. Fit the complete design inside the display,
+// including long headings and the five-day forecast, without clipping content.
+function fitDisplayWidget() {
+  if (!isDisplay) return;
+  const host = $("widget-preview");
+  host.style.width = "";
+  if (settings.preset !== "custom") return;
+  const stage = document.querySelector(".display-stage");
+  const style = getComputedStyle(stage);
+  const available =
+    window.innerHeight -
+    document.querySelector(".display-nav").offsetHeight -
+    document.querySelector(".display-footer").offsetHeight -
+    parseFloat(style.paddingTop) -
+    parseFloat(style.paddingBottom) -
+    4;
+  const { width, height } = host.getBoundingClientRect();
+  if (width && height && available > 0)
+    host.style.width = `${Math.floor(width * Math.min(1, available / height))}px`;
+}
+if (isDisplay) {
+  window.addEventListener("resize", fitDisplayWidget);
+  document.fonts?.ready.then(fitDisplayWidget);
+}
 function save() {
   const saved = writeStored(storage, KEY, settings);
+  // Custom designs opened from a display link also become reusable locally.
+  if (settings.preset === "custom") {
+    hasCustom = true;
+    writeStored(storage, CUSTOM_SAVED_KEY, true);
+  }
   // A return link carries explicit settings; keep it in sync on later edits.
   if (!isDisplay && location.search)
     history.replaceState(
@@ -109,6 +166,42 @@ async function loadWeather() {
   timer = setTimeout(loadWeather, REFRESH_MS);
 }
 if (!isDisplay) {
+  function closeEditor() {
+    editor.close();
+    draft = null;
+    document.body.classList.remove("is-editing");
+    document.querySelector(".presets-panel").hidden = false;
+    render();
+    $("customize").focus();
+  }
+  editor = createCustomEditor({
+    onPreview: (custom) => {
+      draft = custom;
+      render();
+    },
+    onCancel: () => {
+      closeEditor();
+      save();
+    },
+    onApply: (custom) => {
+      settings = normalizeSettings({ ...settings, preset: "custom", custom });
+      hasCustom = true;
+      writeStored(storage, CUSTOM_SAVED_KEY, true);
+      closeEditor();
+      save();
+      $("open-display").focus();
+    },
+  });
+  $("customize").addEventListener("click", () => {
+    document.querySelector(".presets-panel").hidden = true;
+    document.body.classList.add("is-editing");
+    editor.open(settings.custom);
+  });
+  $("use-custom").addEventListener("click", () => {
+    settings = normalizeSettings({ ...settings, preset: "custom" });
+    save();
+    render();
+  });
   $("preset-list").innerHTML = PRESETS.map(
     (p) =>
       `<button type="button" class="preset-option" data-preset="${p.id}" aria-label="Select ${p.name} widget" aria-pressed="false"><div class="thumbnail" aria-hidden="true"><div class="widget-host"></div></div><div class="preset-meta"><strong>${p.name}</strong><span class="selection-circle" aria-hidden="true"></span></div><p class="preset-description">${p.description}</p></button>`,

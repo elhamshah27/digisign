@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Choose a ready-made weather widget for your DigiSign display."
+      content="Choose a ready-made weather widget or make your own in three easy steps."
     />
     <title>Weather widgets · DigiSign</title>
     <link rel="stylesheet" href="static/weather.css" />
@@ -28,7 +28,7 @@
           <p class="eyebrow">A little outside, on your screen</p>
           <h1>Make room for the weather.</h1>
           <p class="lead">
-            Four ready-made looks. Your location. Always in the forecast.
+            Pick a ready-made style, or make one that feels like you.
           </p>
         </div>
         <span class="collection-label"
@@ -108,16 +108,248 @@
             <span class="subtle">4 presets</span>
           </div>
           <div id="preset-list" class="preset-list"></div>
-          <div class="custom-card">
+          <div class="custom-card" id="custom-card">
             <span class="custom-symbol" aria-hidden="true">＋</span>
             <div>
-              <h3>Create your own</h3>
+              <h3>Make your own</h3>
               <p>
-                Your colors, layout, and details.<br />Custom editing is still
-                in development.
+                Choose a color and the details you want. We’ll guide you through
+                it.
               </p>
             </div>
-            <button type="button" disabled>Coming soon</button>
+            <div class="custom-card-actions">
+              <button
+                type="button"
+                id="customize"
+                aria-controls="custom-editor"
+              >
+                Make my widget →
+              </button>
+              <button type="button" id="use-custom" aria-pressed="false" hidden>
+                Use my saved widget
+              </button>
+            </div>
+          </div>
+        </section>
+        <section
+          id="custom-editor"
+          class="custom-editor"
+          aria-labelledby="editor-heading"
+          hidden
+        >
+          <div class="editor-header">
+            <div>
+              <p class="eyebrow">Your own weather widget</p>
+              <h2 id="editor-heading">Make it yours.</h2>
+            </div>
+            <button id="cancel-custom" class="secondary-button" type="button">
+              Cancel
+            </button>
+          </div>
+          <p class="editor-intro">
+            Try anything. Your design changes are only a preview until you
+            choose <strong>Use this widget</strong>.
+          </p>
+          <p id="step-status" class="step-status" role="status">
+            Step 1 of 3 · Choose a look
+          </p>
+          <div class="step-track" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="editor-step" data-step="0">
+            <h3 tabindex="-1">Choose a look</h3>
+            <fieldset class="editor-field">
+              <legend>Background color</legend>
+              <div class="color-choices">
+                <label class="color-choice"
+                  ><input
+                    type="radio"
+                    name="custom-color"
+                    value="#ffffff"
+                  /><span class="color-dot" style="--swatch: #ffffff"></span
+                  ><span>White</span></label
+                >
+                <label class="color-choice"
+                  ><input
+                    type="radio"
+                    name="custom-color"
+                    value="#142b40"
+                  /><span class="color-dot" style="--swatch: #142b40"></span
+                  ><span>Navy</span></label
+                >
+                <label class="color-choice"
+                  ><input
+                    type="radio"
+                    name="custom-color"
+                    value="#d7edf9"
+                  /><span class="color-dot" style="--swatch: #d7edf9"></span
+                  ><span>Sky blue</span></label
+                >
+                <label class="color-choice"
+                  ><input
+                    type="radio"
+                    name="custom-color"
+                    value="#dcebdc"
+                  /><span class="color-dot" style="--swatch: #dcebdc"></span
+                  ><span>Sage</span></label
+                >
+                <label class="color-choice"
+                  ><input
+                    type="radio"
+                    name="custom-color"
+                    value="#eee2f5"
+                  /><span class="color-dot" style="--swatch: #eee2f5"></span
+                  ><span>Lilac</span></label
+                >
+              </div>
+              <label class="other-color" for="custom-color-picker"
+                ><input
+                  id="custom-color-picker"
+                  type="color"
+                  value="#ffffff"
+                />Choose another color</label
+              >
+              <p class="field-help">
+                The text color adjusts automatically to stay easy to read.
+              </p>
+            </fieldset>
+            <div class="editor-field">
+              <label for="custom-title"
+                >Heading <span class="optional">(optional)</span></label
+              ><input
+                id="custom-title"
+                type="text"
+                maxlength="40"
+                placeholder="For example: Welcome to our lobby"
+                aria-describedby="title-help"
+              />
+              <p class="field-help" id="title-help">
+                Leave this blank to show just your city.
+              </p>
+            </div>
+          </div>
+          <div class="editor-step" data-step="1" hidden>
+            <h3 tabindex="-1">Choose what to show</h3>
+            <fieldset class="editor-field">
+              <legend>How many days?</legend>
+              <div class="layout-choices">
+                <label class="choice-tile"
+                  ><input
+                    type="radio"
+                    name="custom-layout"
+                    value="today"
+                  /><span
+                    ><strong>Just today</strong
+                    ><small>A simple view of the weather now.</small></span
+                  ></label
+                >
+                <label class="choice-tile"
+                  ><input
+                    type="radio"
+                    name="custom-layout"
+                    value="three-day"
+                  /><span
+                    ><strong>3 days</strong
+                    ><small>Today and the next two days.</small></span
+                  ></label
+                >
+                <label class="choice-tile"
+                  ><input
+                    type="radio"
+                    name="custom-layout"
+                    value="five-day"
+                  /><span
+                    ><strong>5 days</strong
+                    ><small>See more of the week ahead.</small></span
+                  ></label
+                >
+              </div>
+            </fieldset>
+            <fieldset class="editor-field">
+              <legend>Extra details</legend>
+              <p class="field-help">
+                Temperature and weather conditions always stay on.
+              </p>
+              <label class="check-row"
+                ><input type="checkbox" id="custom-icon" /><span
+                  >Weather pictures<small
+                    >Sun, clouds, rain, and more.</small
+                  ></span
+                ></label
+              >
+              <label class="check-row"
+                ><input type="checkbox" id="custom-feels" /><span
+                  >“Feels like” temperature<small
+                    >How warm or cold it feels outside.</small
+                  ></span
+                ></label
+              >
+              <label class="check-row"
+                ><input type="checkbox" id="custom-highlow" /><span
+                  >Today’s high and low<small
+                    >The warmest and coolest temperatures today.</small
+                  ></span
+                ></label
+              >
+            </fieldset>
+          </div>
+          <div class="editor-step" data-step="2" hidden>
+            <h3 tabindex="-1">Make it easy to read</h3>
+            <fieldset class="editor-field">
+              <legend>Text size</legend>
+              <div class="size-choices">
+                <label class="choice-tile"
+                  ><input
+                    type="radio"
+                    name="custom-size"
+                    value="standard"
+                  /><span
+                    ><strong>Standard</strong
+                    ><small>A balanced fit.</small></span
+                  ></label
+                >
+                <label class="choice-tile"
+                  ><input type="radio" name="custom-size" value="large" /><span
+                    ><strong>Bigger</strong
+                    ><small>Easier to read from a distance.</small></span
+                  ></label
+                >
+              </div>
+            </fieldset>
+            <div class="ready-note">
+              <strong>Looking good?</strong>
+              <p>
+                Choose <b>Use this widget</b> to save your design on this
+                browser. You can edit it again whenever you like.
+              </p>
+            </div>
+          </div>
+          <div class="editor-tools">
+            <button type="button" id="undo-custom" class="text-button" disabled>
+              ↶ Undo last change</button
+            ><button type="button" id="reset-custom" class="text-button">
+              Start over
+            </button>
+          </div>
+          <p id="editor-feedback" class="editor-feedback" role="status"></p>
+          <div class="editor-navigation">
+            <button
+              type="button"
+              id="previous-step"
+              class="secondary-button"
+              hidden
+            >
+              ← Back</button
+            ><button type="button" id="next-step" class="primary-button">
+              Next: choose details →</button
+            ><button
+              type="button"
+              id="apply-custom"
+              class="primary-button"
+              hidden
+            >
+              Use this widget ✓
+            </button>
           </div>
         </section>
       </div>

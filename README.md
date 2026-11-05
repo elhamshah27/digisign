@@ -1,6 +1,6 @@
 # DigiSign
 
-Digital signage project with four ready-made weather widgets: **Minimal**, **Dark**, **Sky**, and **Forecast**.
+Digital signage project with four ready-made weather widgets—**Minimal**, **Dark**, **Sky**, and **Forecast**—and a guided custom widget editor.
 
 ## Run locally
 
@@ -19,7 +19,19 @@ Open http://127.0.0.1:4173. No dependencies or build step are required. Alternat
 3. Select Minimal, Dark, Sky, or Forecast. Each thumbnail and the large preview use the same real weather data.
 4. Select **Open display** for the selected widget's display page. Its URL includes the style, city coordinates, and units, so it can be bookmarked, shared, or embedded in a signage layout using an iframe.
 
-Selection is saved in this browser, not in a server account. The display URL also works when local storage is unavailable. **Create your own** is visibly marked as in development and cannot be selected yet.
+Selection is saved in this browser, not in a server account. The display URL also works when local storage is unavailable.
+
+## Make a custom widget
+
+Choose **Make my widget** to open a three-step editor beside a live preview:
+
+1. **Choose a look:** select a background color or use the color picker. Text switches automatically to a readable color. Add an optional heading, or leave it blank to show just the city.
+2. **Choose what to show:** select today, three days, or five days. Turn weather pictures, feels-like temperature, and today's high/low on or off. Current temperature and conditions always remain visible.
+3. **Make it easy to read:** choose Standard or Bigger text, then select **Use this widget** to save and select the design.
+
+**Undo last change** reverses an edit. **Start over** restores the default design and can itself be undone. **Cancel** discards design changes and returns to the previous selection. City and temperature-unit settings apply immediately, independently of the design draft.
+
+After saving, **Edit my widget** reopens the design and **Use my saved widget** restores it after trying a preset. **Open display** includes every custom design option in its link, so the appearance is preserved when bookmarked or opened on another screen. An imported custom design remains available locally after switching presets and reloading.
 
 The original drag-and-drop proof of concept is preserved at `layout-prototype.html` and linked from the header. The weather display is not yet integrated into that prototype's drag-and-drop editor.
 
@@ -35,12 +47,12 @@ The original drag-and-drop proof of concept is preserved at `layout-prototype.ht
 
 ## Files and testing
 
-`static/weather-core.mjs` handles settings, API requests and caching. `static/weather-render.mjs` renders the reusable widgets. `static/weather-app.mjs` connects the selector and display pages. Styling is isolated in `static/weather.css`, leaving the original prototype CSS and JavaScript intact.
+`static/weather-core.mjs` handles settings, API requests and caching. `static/weather-render.mjs` renders the reusable widgets. `static/weather-app.mjs` connects the selector and display pages. `static/custom-editor.mjs` manages the guided editor, temporary design draft, and undo history. Styling is isolated in `static/weather.css`, leaving the original prototype CSS and JavaScript intact.
 
 ```sh
 npm test
 ```
 
-Tests cover display-link round trips, input validation, units, weather codes, escaped location names, five-day rendering, outages, storage failure, cache expiration, and overlapping requests.
+Tests cover display-link round trips, input validation, units, weather codes, escaped location names, forecast rendering, outages, storage failure, cache expiration, and overlapping requests. Custom-widget tests cover all serialized design options, invalid colors and settings, escaped headings, readable color contrast, layout day counts, and optional details.
 
-Manual browser checks: select each preset, switch units, choose a search result, refresh to verify persistence, open the display, return to the selector, and check narrow and wide layouts. Only the original prototype has drag-and-drop functionality; custom weather editing remains future work.
+Manual browser checks: select each preset, switch units, choose a search result, refresh to verify persistence, open the display, return to the selector, and check narrow and wide layouts. In the custom editor, check every step, Undo, Start over, Cancel, applying a design, re-editing it, and restoring it after a preset switch. Check shared custom links in a fresh browser, long headings, Bigger text, and forecasts with pictures switched off. Only the original prototype has drag-and-drop functionality; the custom weather editor uses guided controls.
