@@ -543,6 +543,9 @@ h1 {
   margin: 5cqw 0 4cqw;
 }
 .widget-temp {
+  display: flex;
+  align-items: flex-start;
+  gap: 2cqw;
   font-size: 20cqw;
   line-height: 1;
   letter-spacing: -1.3cqw;
@@ -553,8 +556,7 @@ h1 {
 .widget-unit {
   font-size: 5cqw;
   letter-spacing: 0;
-  vertical-align: top;
-  display: inline-block;
+  flex-shrink: 0;
   padding-top: 2cqw;
   color: var(--soft);
 }
